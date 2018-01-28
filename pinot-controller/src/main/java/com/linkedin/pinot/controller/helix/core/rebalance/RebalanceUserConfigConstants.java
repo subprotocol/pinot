@@ -24,4 +24,9 @@ public class RebalanceUserConfigConstants {
   public static final String DRYRUN = "dryRun";
   /** Whether consuming segments should also be rebalanced or not */
   public static final String INCLUDE_CONSUMING = "includeConsuming";
+  public static final String REPLICA_GROUP_BOOTSTRAP = "replicaGroupBootstrap";
+
+  public static final boolean DEFAULT_DRY_RUN = true;
+  public static final boolean DEFAULT_INCLUDE_CONSUMING = false;
+  public static final boolean DEFAULT_REPLICA_GROUP_BOOTSTRAP = false;
 }
