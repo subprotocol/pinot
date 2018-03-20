@@ -31,6 +31,7 @@ public class PinotSegmentColumnReader {
   private final DataFileReader _reader;
   private final ReaderContext _readerContext;
   private final int[] _mvBuffer;
+  private final boolean _isColumnSorted;
 
   public PinotSegmentColumnReader(IndexSegmentImpl indexSegment, String columnName) {
     _dictionary = indexSegment.getDictionaryFor(columnName);
@@ -43,6 +44,7 @@ public class PinotSegmentColumnReader {
     } else {
       _mvBuffer = new int[columnMetadata.getMaxNumberOfMultiValues()];
     }
+    _isColumnSorted = columnMetadata.isSorted();
   }
 
   Object readInt(int docId) {
@@ -103,5 +105,9 @@ public class PinotSegmentColumnReader {
       values[i] = _dictionary.get(_mvBuffer[i]);
     }
     return values;
+  }
+
+  boolean isColumnSorted() {
+    return _isColumnSorted;
   }
 }
