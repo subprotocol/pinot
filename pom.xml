@@ -117,6 +117,8 @@
     <jersey.version>2.23</jersey.version>
     <swagger.version>1.5.10</swagger.version>
     <hadoop.version>2.7.0</hadoop.version>
+    <commons-lang.version>2.6</commons-lang.version>
+    <commons-math3.version>3.2</commons-math3.version>
     <!-- Sets the VM argument line used when unit tests are run. -->
     <argLine> -Xms4g -Xmx4g -XX:MaxPermSize=512m -XX:MaxDirectMemorySize=10g </argLine>
   </properties>
