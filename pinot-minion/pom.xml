@@ -84,5 +84,9 @@
       <artifactId>testng</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.linkedin.pinot</groupId>
+      <artifactId>pinot-common</artifactId>
+    </dependency>
   </dependencies>
 </project>

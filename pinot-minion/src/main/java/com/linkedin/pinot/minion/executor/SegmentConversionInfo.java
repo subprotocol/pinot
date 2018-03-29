@@ -13,13 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkedin.pinot.controller.api.events;
+package com.linkedin.pinot.minion.executor;
 
-import com.linkedin.pinot.common.config.TableConfig;
-import com.linkedin.pinot.common.data.Schema;
+import java.io.File;
+import java.util.Map;
 
-public interface MetadataEventNotifier {
-  void notifyOnSchemaEvents(Schema schema, SchemaEventType eventType);
 
-  void notifyOnSegmentFlush(TableConfig tableConfig);
+public class SegmentConversionInfo {
+  private Map<String, String> _properties;
+  private File _file;
+
+  public SegmentConversionInfo(Map<String, String> properties, File file) {
+    _properties = properties;
+    _file = file;
+  }
+
+  public File getFile() {
+    return _file;
+  }
+
+  public Map<String, String> getProperties() {
+    return _properties;
+  }
 }

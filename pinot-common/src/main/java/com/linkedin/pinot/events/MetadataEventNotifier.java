@@ -13,8 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkedin.pinot.controller.api.events;
+package com.linkedin.pinot.events;
 
-public enum SchemaEventType {
-  CREATE, UPDATE, DELETE
+import com.linkedin.pinot.common.config.TableConfig;
+import com.linkedin.pinot.common.data.Schema;
+import java.util.Map;
+
+
+public interface MetadataEventNotifier {
+  void notifyOnSchemaEvents(Schema schema, SchemaEventType eventType);
+
+  void notifyOnSegmentFlush(TableConfig tableConfig);
+
+  void notifyOnPurge(Map<String, String> properties);
 }

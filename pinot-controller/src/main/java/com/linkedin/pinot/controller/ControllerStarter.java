@@ -27,7 +27,7 @@ import com.linkedin.pinot.common.utils.CommonConstants;
 import com.linkedin.pinot.common.utils.ServiceStatus;
 import com.linkedin.pinot.controller.api.ControllerAdminApiApplication;
 import com.linkedin.pinot.controller.api.access.AccessControlFactory;
-import com.linkedin.pinot.controller.api.events.MetadataEventNotifierFactory;
+import com.linkedin.pinot.events.MetadataEventNotifierFactory;
 import com.linkedin.pinot.controller.helix.SegmentStatusChecker;
 import com.linkedin.pinot.controller.helix.core.PinotHelixResourceManager;
 import com.linkedin.pinot.controller.helix.core.minion.PinotHelixTaskResourceManager;

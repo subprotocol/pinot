@@ -13,17 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkedin.pinot.controller.api.events;
+package com.linkedin.pinot.events;
 
-import com.linkedin.pinot.common.config.TableConfig;
-import com.linkedin.pinot.common.data.Schema;
-
-public class DefaultMetadataEventNotifier implements MetadataEventNotifier {
-  public void notifyOnSchemaEvents(Schema schema, SchemaEventType eventType) {
-
-  }
-
-  public void notifyOnSegmentFlush(TableConfig tableConfig) {
-
-  }
+public enum SchemaEventType {
+  CREATE, UPDATE, DELETE
 }

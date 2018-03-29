@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.linkedin.pinot.controller.api.events;
+package com.linkedin.pinot.events;
 
-import org.apache.commons.configuration.Configuration;
+import com.linkedin.pinot.common.config.TableConfig;
+import com.linkedin.pinot.common.data.Schema;
+import java.util.Map;
 
 
-public class DefaultMetadataEventNotifierFactory extends MetadataEventNotifierFactory {
-
-  public MetadataEventNotifier create() {
-    return new DefaultMetadataEventNotifier();
-  }
-
-  public void init(Configuration configuration) {
+public class DefaultMetadataEventNotifier implements MetadataEventNotifier {
+  public void notifyOnSchemaEvents(Schema schema, SchemaEventType eventType) {
 
   }
 
+  public void notifyOnSegmentFlush(TableConfig tableConfig) {
+
+  }
+
+  public void notifyOnPurge(Map<String, String> properties) {
+
+  }
 }

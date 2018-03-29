@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 public class PurgeTaskExecutor extends BaseSegmentConversionExecutor {
 
   @Override
-  protected File convert(@Nonnull PinotTaskConfig pinotTaskConfig, @Nonnull File originalIndexDir,
+  protected SegmentConversionInfo convert(@Nonnull PinotTaskConfig pinotTaskConfig, @Nonnull File originalIndexDir,
       @Nonnull File workingDir) throws Exception {
     String rawTableName =
         TableNameBuilder.extractRawTableName(pinotTaskConfig.getConfigs().get(MinionConstants.TABLE_NAME_KEY));
@@ -43,7 +43,9 @@ public class PurgeTaskExecutor extends BaseSegmentConversionExecutor {
       recordModifier = recordModifierFactory.getRecordModifier(rawTableName);
     }
 
-    return new SegmentPurger(originalIndexDir, workingDir, recordPurger, recordModifier).purgeSegment();
+    SegmentPurger segmentPurger = new SegmentPurger(originalIndexDir, workingDir, recordPurger, recordModifier);
+    File purgedSegmentFile = segmentPurger.purgeSegment();
+    return new SegmentConversionInfo(segmentPurger.getConversionMetadata(), purgedSegmentFile);
   }
 
   @Override

@@ -264,6 +264,7 @@ public class CommonConstants {
     public static final String INSTANCE_TYPE = "minion";
     public static final String UNTAGGED_INSTANCE = "minion_untagged";
     public static final String METRICS_PREFIX = "pinot.minion.";
+    public static final String METADATA_EVENT_NOTIFIER_PREFIX = "metadata.event.notifier";
 
     // Config keys
     public static final String METRICS_REGISTRY_REGISTRATION_LISTENERS_KEY = "metricsRegistryRegistrationListeners";
@@ -275,6 +276,10 @@ public class CommonConstants {
     public static final String DEFAULT_INSTANCE_DATA_DIR = DEFAULT_INSTANCE_BASE_DIR + File.separator + "data";
     public static final String PREFIX_OF_CONFIG_OF_SEGMENT_FETCHER_FACTORY = "segment.fetcher";
     public static final String PREFIX_OF_CONFIG_OF_SEGMENT_UPLOADER = "segment.uploader";
+
+    // Metadata information
+    public static final String PARTITION = "segment.name";
+    public static final String NUM_RECORDS_PURGED = "num.records.purged";
   }
 
   public static class Metric {

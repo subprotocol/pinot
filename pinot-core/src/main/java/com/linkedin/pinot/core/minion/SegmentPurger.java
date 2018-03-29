@@ -29,6 +29,8 @@ import com.linkedin.pinot.core.segment.creator.impl.SegmentIndexCreationDriverIm
 import com.linkedin.pinot.core.segment.index.SegmentMetadataImpl;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +62,11 @@ public class SegmentPurger {
     _recordPurger = recordPurger;
     _recordModifier = recordModifier;
   }
+
+  public Map<String, String> getConversionMetadata() {
+    return Collections.emptyMap();
+  }
+
 
   public File purgeSegment() throws Exception {
     SegmentMetadata segmentMetadata = new SegmentMetadataImpl(_originalIndexDir);

@@ -28,11 +28,13 @@ import com.linkedin.pinot.common.utils.TarGzCompressionUtils;
 import com.linkedin.pinot.common.utils.retry.RetryPolicies;
 import com.linkedin.pinot.common.utils.retry.RetryPolicy;
 import com.linkedin.pinot.core.common.MinionConstants;
+import com.linkedin.pinot.events.MetadataEventNotifierFactory;
 import com.linkedin.pinot.minion.exception.TaskCancelledException;
 import java.io.File;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -67,11 +69,15 @@ public abstract class BaseSegmentConversionExecutor extends BaseTaskExecutor {
 
   private static SSLContext _sslContext;
 
+  private static MetadataEventNotifierFactory _metadataEventNotifierFactory;
+
   public static void init(Configuration uploaderConfig) {
     Configuration httpsConfig = uploaderConfig.subset(HTTPS_PROTOCOL);
     if (httpsConfig.getBoolean(CONFIG_OF_CONTROLLER_HTTPS_ENABLED, false)) {
       _sslContext = new ClientSSLContextGenerator(httpsConfig.subset(CommonConstants.PREFIX_OF_SSL_SUBSET)).generate();
     }
+    _metadataEventNotifierFactory = MetadataEventNotifierFactory.loadFactory(
+        uploaderConfig.subset(CommonConstants.Minion.METADATA_EVENT_NOTIFIER_PREFIX));
   }
 
   /**
@@ -83,13 +89,15 @@ public abstract class BaseSegmentConversionExecutor extends BaseTaskExecutor {
    * @return Index directory for the converted segment
    * @throws Exception
    */
-  protected abstract File convert(@Nonnull PinotTaskConfig pinotTaskConfig, @Nonnull File originalIndexDir,
+  protected abstract SegmentConversionInfo convert(@Nonnull PinotTaskConfig pinotTaskConfig, @Nonnull File originalIndexDir,
       @Nonnull File workingDir) throws Exception;
 
   protected abstract SegmentZKMetadataCustomMapModifier getSegmentZKMetadataCustomMapModifier() throws Exception;
 
   @Override
   public void executeTask(@Nonnull PinotTaskConfig pinotTaskConfig) throws Exception {
+    Map<String, String> properties = new HashMap<>();
+    Map<String, String> columnsPurgedToNumRecords = new HashMap<>();
     String taskType = pinotTaskConfig.getTaskType();
     Map<String, String> configs = pinotTaskConfig.getConfigs();
     final String tableName = configs.get(MinionConstants.TABLE_NAME_KEY);
@@ -120,7 +128,9 @@ public abstract class BaseSegmentConversionExecutor extends BaseTaskExecutor {
       // Convert the segment
       File workingDir = new File(tempDataDir, "workingDir");
       Preconditions.checkState(workingDir.mkdir());
-      File convertedIndexDir = convert(pinotTaskConfig, indexDir, workingDir);
+      SegmentConversionInfo segmentConversionInfo = convert(pinotTaskConfig, indexDir, workingDir);
+      File convertedIndexDir = segmentConversionInfo.getFile();
+      Map<String, String> conversionMetadata = segmentConversionInfo.getProperties();
 
       // Tar the converted segment
       File convertedTarredSegmentDir = new File(tempDataDir, "convertedTarredSegmentDir");
@@ -193,6 +203,10 @@ public abstract class BaseSegmentConversionExecutor extends BaseTaskExecutor {
           }
         });
       }
+
+      conversionMetadata.put(CommonConstants.Minion.PARTITION, segmentName);
+
+      _metadataEventNotifierFactory.create().notifyOnPurge(conversionMetadata);
 
       LOGGER.info("Done executing {} on table: {}, segment: {}", taskType, tableName, segmentName);
     } finally {
