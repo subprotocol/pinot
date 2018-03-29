@@ -18,6 +18,7 @@ package com.linkedin.pinot.broker.broker.helix;
 import com.google.common.collect.ImmutableList;
 import com.linkedin.pinot.broker.broker.AccessControlFactory;
 import com.linkedin.pinot.broker.broker.BrokerServerBuilder;
+import com.linkedin.pinot.broker.queryquota.TableQueryQuotaManager;
 import com.linkedin.pinot.broker.routing.HelixExternalViewBasedRouting;
 import com.linkedin.pinot.common.metadata.ZKMetadataProvider;
 import com.linkedin.pinot.common.metrics.BrokerMeter;
@@ -65,6 +66,7 @@ public class HelixBrokerStarter {
   private final ZkHelixPropertyStore<ZNRecord> _propertyStore;
   private final LiveInstancesChangeListenerImpl _liveInstancesListener;
   private final MetricsRegistry _metricsRegistry;
+  private final TableQueryQuotaManager _tableQueryQuotaManager;
 
   // Set after broker is started, which is actually in the constructor.
   private AccessControlFactory _accessControlFactory;
@@ -115,10 +117,11 @@ public class HelixBrokerStarter {
     _propertyStore = _spectatorHelixManager.getHelixPropertyStore();
     _helixExternalViewBasedRouting = new HelixExternalViewBasedRouting(_propertyStore, _spectatorHelixManager,
         pinotHelixProperties.subset(ROUTING_TABLE_PARAMS_SUBSET_KEY));
+    _tableQueryQuotaManager = new TableQueryQuotaManager(_propertyStore);
     _brokerServerBuilder = startBroker(_pinotHelixProperties);
     _metricsRegistry = _brokerServerBuilder.getMetricsRegistry();
     ClusterChangeMediator clusterChangeMediator =
-        new ClusterChangeMediator(_helixExternalViewBasedRouting, _brokerServerBuilder.getBrokerMetrics());
+        new ClusterChangeMediator(_helixExternalViewBasedRouting, _tableQueryQuotaManager, _brokerServerBuilder.getBrokerMetrics());
     _spectatorHelixManager.addExternalViewChangeListener(clusterChangeMediator);
     _spectatorHelixManager.addInstanceConfigChangeListener(clusterChangeMediator);
     _spectatorHelixManager.addLiveInstanceChangeListener(_liveInstancesListener);
@@ -185,7 +188,7 @@ public class HelixBrokerStarter {
     }
     final BrokerServerBuilder brokerServerBuilder =
         new BrokerServerBuilder(config, _helixExternalViewBasedRouting,
-            _helixExternalViewBasedRouting.getTimeBoundaryService(), _liveInstancesListener);
+            _helixExternalViewBasedRouting.getTimeBoundaryService(), _liveInstancesListener, _tableQueryQuotaManager);
     brokerServerBuilder.buildNetwork();
     brokerServerBuilder.buildHTTP();
     _accessControlFactory = brokerServerBuilder.getAccessControlFactory();
